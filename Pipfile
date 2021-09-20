@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 django = "==3.2.7"
 djangorestframework = "==3.12.4"
+paramiko = "==2.7.2"
 
 [dev-packages]
 
