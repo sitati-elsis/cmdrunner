@@ -11,7 +11,7 @@ class MachineSerializer(serializers.ModelSerializer):
 class CommandOptionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CommandOptions
-        fields = ('command', 'option', 'description')
+        fields = ('option_id', 'option', 'description')
 
 
 class CommandSerializer(serializers.ModelSerializer):
