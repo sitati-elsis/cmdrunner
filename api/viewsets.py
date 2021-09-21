@@ -11,25 +11,84 @@ from api import models, serializers
 logger = logging.getLogger(__name__)
 
 class MachineViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+        Return a machine instance.
+
+    list:
+        Return all machines.
+
+    create:
+        Create a new machine.
+
+    delete:
+        Remove an existing machine.
+
+    update:
+        Update a machine.
+    """
     queryset = models.Machine.objects.all()
     serializer_class = serializers.MachineSerializer
 
 
 class CommandViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+        Return a command instance.
+
+    list:
+        Return all commands.
+
+    create:
+        Create a new command.
+
+    delete:
+        Remove an existing command.
+
+    update:
+        Update a command.
+    """
     queryset = models.Command.objects.all()
     serializer_class = serializers.CommandSerializer
 
 
 class CommandOptionsViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+        Return a commandoption instance.
+
+    list:
+        Return all commandoptions.
+
+    create:
+        Create a new commandoption.
+
+    delete:
+        Remove an existing commandoption.
+
+    update:
+        Update a commandoption.
+    """
     queryset = models.CommandOptions.objects.all()
     serializer_class = serializers.CommandOptionsSerializer
 
 
 class ResultViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+        Return a result instance.
+        
+    list:
+        Return all results.
+    """
     queryset = models.Result.objects.all()
     serializer_class = serializers.ResultSerializer
 
 class SignupViewSet(viewsets.ViewSet):
+    """
+    create:
+        Create a new user.
+    """
     permission_classes = [AllowAny]
     def create(self, request):
         try:

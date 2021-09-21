@@ -1,7 +1,6 @@
 import asyncio
 import logging
 
-# from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import async_to_sync
 from rest_framework import status
@@ -79,9 +78,12 @@ def ssh_remote_machine(user, data, command_id):
 
 # Create your views here.
 @csrf_exempt
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def execute(request, command_id):
     """
+    Execute a command instance of primary key = <command_id> on one or more
+    machines.
+
     JSON payload strucure:
     
         {

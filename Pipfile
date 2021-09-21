@@ -9,6 +9,8 @@ djangorestframework = "==3.12.4"
 paramiko = "==2.7.2"
 uvicorn = "==0.15.0"
 gunicorn = "==20.1.0"
+pyyaml = "==5.4.1"
+uritemplate = "==3.0.1"
 
 [dev-packages]
 
