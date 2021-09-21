@@ -25,3 +25,15 @@ class CommandOptions(models.Model):
 
     def __str__(self):
         return f'{self.command.command_name} {self.option}'
+
+class Result(models.Model):
+    result_id = models.IntegerField(primary_key=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    std_in = models.TextField()
+    std_out = models.TextField()
+    std_err = models.TextField()
+    # TODO: Tie this to authenticated user
+    user = models.CharField(max_length=15)
+
+    def __str__(self):
+        return f'{self.result_id}'
