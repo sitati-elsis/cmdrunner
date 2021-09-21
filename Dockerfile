@@ -13,7 +13,7 @@ RUN pipenv install --system
 ENV DJANGO_SETTINGS_MODULE="cmdrunner.settings.prod_settings"
 
 # secure this.
-ENV SECRET_KEY = 'SECURE THIS KEY'
+ENV SECRET_KEY='SECURE THIS KEY'
 
 RUN mkdir -p /var/log/django/
 
@@ -22,4 +22,5 @@ RUN python manage.py makemigrations && \
 
 EXPOSE 7331
 
-CMD [ "python", "manage.py", "runserver", "0.0.0.0:7331" ]
+CMD ["gunicorn", "cmdrunner.asgi:application",\
+        "-b 0.0.0.0:7331", "-k uvicorn.workers.UvicornWorker"]
