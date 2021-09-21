@@ -75,6 +75,20 @@ def ssh_remote_machine(user, data, command_id):
 @csrf_exempt
 @api_view(['GET', 'POST'])
 def execute(request, command_id):
+    """
+    JSON payload strucure:
+        {
+            "cmd_options": [<command_option_id_1>, <command_option_id_2>,...],
+            "machines": [
+                {
+                    "machine_id": <machine_id>,
+                    "username": "<username>",
+                    "password": "<password>"
+                },
+                ...
+            ]
+        }
+    """
     if request.method == 'POST':
         # loop = asyncio.get_event_loop()
         # loop.create_task(ssh_remote_machine(request.data))
