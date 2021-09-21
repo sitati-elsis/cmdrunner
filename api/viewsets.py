@@ -6,10 +6,17 @@ class MachineViewSet(viewsets.ModelViewSet):
     queryset = models.Machine.objects.all()
     serializer_class = serializers.MachineSerializer
 
+
 class CommandViewSet(viewsets.ModelViewSet):
     queryset = models.Command.objects.all()
     serializer_class = serializers.CommandSerializer
 
+
 class CommandOptionsViewSet(viewsets.ModelViewSet):
     queryset = models.CommandOptions.objects.all()
     serializer_class = serializers.CommandOptionsSerializer
+
+
+class ResultViewSet(viewsets.ModelViewSet):
+    queryset = models.Result.objects.all()
+    serializer_class = serializers.ResultSerializer

@@ -29,7 +29,7 @@ class CommandOptions(models.Model):
 class Result(models.Model):
     result_id = models.IntegerField(primary_key=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    std_in = models.TextField()
+    executed_command = models.CharField(max_length=255)
     std_out = models.TextField()
     std_err = models.TextField()
     # TODO: Tie this to authenticated user

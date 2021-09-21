@@ -19,3 +19,12 @@ class CommandSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Command
         fields = ('command_name', 'commandoption')
+
+
+class ResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Result
+        fields = ('result_id', 'created_at', 'executed_command',
+                    'std_out', 'std_err', 'user')
+        read_only_fields = ('result_id', 'created_at', 'executed_command',
+                    'std_out', 'std_err', 'user')
