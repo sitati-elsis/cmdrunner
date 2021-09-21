@@ -22,7 +22,8 @@ class CommandOptions(models.Model):
     option_id = models.AutoField(primary_key=True)
     option = models.CharField(max_length=15)
     description = models.CharField(max_length=100)
-    command = models.ForeignKey(Command, on_delete=models.CASCADE, related_name='commandoption')
+    command = models.ForeignKey(
+        Command, on_delete=models.CASCADE, related_name='commandoption')
 
     def __str__(self):
         return f'{self.command.command_name} {self.option}'
