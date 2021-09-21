@@ -10,17 +10,16 @@ RUN pip install pipenv
 
 RUN pipenv install --system
 
-ENV DJANGO_SETTINGS_MODULE="cmdrunner.settings.prod_settings"
-
-# secure this.
-ENV SECRET_KEY='SECURE THIS KEY'
-
 RUN mkdir -p /var/log/django/
-
-RUN python manage.py makemigrations && \
-        python manage.py migrate
 
 EXPOSE 7331
 
-CMD ["gunicorn", "cmdrunner.asgi:application",\
-        "-b 0.0.0.0:7331", "-k uvicorn.workers.UvicornWorker"]
+# pg_ready command is installed through this package.
+# The command will be used to poll the "db" container to check if postgres is
+# ready to accept connections. When ready, migrations will be run in the
+# entrypoint script.
+RUN apt-get update && apt-get install -f -y postgresql-client
+
+RUN chown root:root /code/docker_entrypoint.sh && chmod 755 /code/docker_entrypoint.sh
+
+ENTRYPOINT /code/docker_entrypoint.sh
