@@ -1,5 +1,7 @@
 import logging
 
+from api import models
+
 logger = logging.getLogger(__name__)
 
 def generate_full_command(command, command_options, params):
@@ -8,7 +10,7 @@ def generate_full_command(command, command_options, params):
     for option in command_options:
         # fetching this directly using .get(pk=option) will get a DoesNotExist
         # if the pk does not exist in the DB
-        co = CommandOptions.objects.filter(pk=option, command=command)
+        co = models.CommandOptions.objects.filter(pk=option, command=command)
         if len(co) == 1:
             co = co[0]
             cmd = f'{cmd} -{co.option} '
