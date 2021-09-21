@@ -14,13 +14,17 @@ from api import serializers
 
 logger = logging.getLogger(__name__)
 
-def generate_full_command(command_id, command_options):
+def generate_full_command(command_id, command_options, params):
     cmd = ''
     command = Command.objects.get(pk=command_id)
     cmd = f'{command.command_name}'
     for option in command_options:
         co = CommandOptions.objects.get(pk=option)
-        cmd = f'{cmd} -{co.option} '
+        if co.command.command_id == command.command_id:
+            # only add the option if it belongs to command
+            cmd = f'{cmd} -{co.option} '
+    for param in params:
+        cmd = f'{cmd} {param} '
     logger.info(f'full command: {cmd}.')
     return cmd
 
@@ -32,7 +36,8 @@ def ssh_remote_machine(user, data, command_id):
         client.set_missing_host_key_policy(AutoAddPolicy())
         # construct the command that will be executed
         cmd_options = data.pop('cmd_options')
-        full_command = generate_full_command(command_id, cmd_options)
+        params = data.get('parameters', [])
+        full_command = generate_full_command(command_id, cmd_options, params)
         # execute command for each machine_id supplied
         machines = data.pop('machines')
         for machine_dict in machines:
@@ -77,6 +82,7 @@ def ssh_remote_machine(user, data, command_id):
 def execute(request, command_id):
     """
     JSON payload strucure:
+    
         {
             "cmd_options": [<command_option_id_1>, <command_option_id_2>,...],
             "machines": [
@@ -86,7 +92,8 @@ def execute(request, command_id):
                     "password": "<password>"
                 },
                 ...
-            ]
+            ],
+            "parameters": [<parameter_1>, <parameter_2>,...]
         }
     """
     if request.method == 'POST':
