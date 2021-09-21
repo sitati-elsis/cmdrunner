@@ -35,6 +35,8 @@ class Result(models.Model):
     std_err = models.TextField()
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='result')
+    machine = models.ForeignKey(
+        Machine, on_delete=models.CASCADE, related_name='result')
 
     def __str__(self):
         return f'{self.result_id}'

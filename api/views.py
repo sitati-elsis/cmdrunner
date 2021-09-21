@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from paramiko.client import AutoAddPolicy, SSHClient
 
-from api.models import Command, CommandOptions, Result
+from api.models import Command, CommandOptions, Result, Machine
 from api import serializers
 
 logger = logging.getLogger(__name__)
@@ -38,7 +38,9 @@ def ssh_remote_machine(user, data, command_id):
         stdin, stdout, stderr = client.exec_command(full_command)
         # commands that require input e.g. when sudo asks for a password
         # stdin.write(request.data['password'])
-        result = Result(executed_command=full_command, user=user)
+        machine = Machine.objects.get(pk=machines[0])
+        result = Result(executed_command=full_command,
+                            user=user, machine=machine)
         # store stdout
         stored = ''
         lines = stdout.readlines()
