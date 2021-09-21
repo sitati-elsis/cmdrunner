@@ -6,6 +6,16 @@ WORKDIR /code
 
 COPY . /code/
 
+COPY celery_prod/celeryd.conf /etc/default/
+COPY celery_prod/celeryd /etc/init.d/celeryd
+
+RUN mv /etc/default/celeryd.conf /etc/default/celeryd && \
+    chmod 755 /etc/default/celeryd && \
+    chmod 755 /etc/init.d/celeryd
+
+# create celery user and disable login
+RUN useradd -M celery && usermod -L celery
+
 RUN pip install pipenv
 
 RUN pipenv install --system

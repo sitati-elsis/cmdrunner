@@ -5,7 +5,8 @@ from celery import Celery
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cmdrunner.settings.prod_settings')
 
-app = Celery('cmdrunner')
+# always set the rabbit-mq server's name to "rabbitmq"
+app = Celery('cmdrunner', broker='pyamqp://guest@rabbitmq//')
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.
