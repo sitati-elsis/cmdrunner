@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Machine(models.Model):
@@ -32,8 +33,8 @@ class Result(models.Model):
     executed_command = models.CharField(max_length=255)
     std_out = models.TextField()
     std_err = models.TextField()
-    # TODO: Tie this to authenticated user
-    user = models.CharField(max_length=15)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='result')
 
     def __str__(self):
         return f'{self.result_id}'

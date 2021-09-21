@@ -25,7 +25,7 @@ def generate_full_command(command_id, command_options):
     return cmd
 
 # async def ssh_remote_machine(request):
-def ssh_remote_machine(data, command_id):
+def ssh_remote_machine(user, data, command_id):
     # import pdb; pdb.set_trace()
     result = None
     client = SSHClient()
@@ -38,7 +38,7 @@ def ssh_remote_machine(data, command_id):
         stdin, stdout, stderr = client.exec_command(full_command)
         # commands that require input e.g. when sudo asks for a password
         # stdin.write(request.data['password'])
-        result = Result(executed_command=full_command)
+        result = Result(executed_command=full_command, user=user)
         # store stdout
         stored = ''
         lines = stdout.readlines()
@@ -69,7 +69,7 @@ def execute(request, command_id):
         # loop = asyncio.get_event_loop()
         # loop.create_task(ssh_remote_machine(request.data))
         # async_to_sync(ssh_remote_machine(request.data))
-        result = ssh_remote_machine(request.data, command_id)
+        result = ssh_remote_machine(request.user, request.data, command_id)
         if result:
             serializer = serializers.ResultSerializer(result)
             return Response(serializer.data, status=status.HTTP_200_OK)
