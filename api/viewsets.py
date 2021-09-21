@@ -27,7 +27,7 @@ class MachineViewSet(viewsets.ModelViewSet):
     update:
         Update a machine.
     """
-    queryset = models.Machine.objects.all()
+    queryset = models.Machine.objects.all().order_by('machine_id')
     serializer_class = serializers.MachineSerializer
 
 
@@ -38,7 +38,7 @@ class CommandViewSet(viewsets.ModelViewSet):
 
     list:
         Return all commands.
-        
+
     create:
         Create a new command.
 
@@ -48,7 +48,7 @@ class CommandViewSet(viewsets.ModelViewSet):
     update:
         Update a command.
     """
-    queryset = models.Command.objects.all()
+    queryset = models.Command.objects.all().order_by('command_id')
     serializer_class = serializers.CommandSerializer
 
 
@@ -65,7 +65,7 @@ class CommandOptionsViewSet(viewsets.ModelViewSet):
 
     delete:
         Remove an existing commandoption.
-        
+
     update:
         Update a commandoption.
     """
@@ -74,7 +74,7 @@ class CommandOptionsViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return models.CommandOptions.objects.filter(
-            command=self.kwargs['command_pk'])
+            command=self.kwargs['command_pk']).order_by('option_id')
 
     def create(self, request, command_pk):
         try:
@@ -107,7 +107,7 @@ class ResultViewSet(viewsets.ModelViewSet):
     list:
         Return all results.
     """
-    queryset = models.Result.objects.all()
+    queryset = models.Result.objects.all().order_by('result_id')
     serializer_class = serializers.ResultSerializer
 
 class SignupViewSet(viewsets.ViewSet):
