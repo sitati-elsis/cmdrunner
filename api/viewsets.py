@@ -69,9 +69,34 @@ class CommandOptionsViewSet(viewsets.ModelViewSet):
     update:
         Update a commandoption.
     """
-    queryset = models.CommandOptions.objects.all()
+
     serializer_class = serializers.CommandOptionsSerializer
 
+    def get_queryset(self):
+        return models.CommandOptions.objects.filter(command=kwargs['command_pk'])
+
+    def create(self, request, command_pk):
+        try:
+            serializer = serializers.CommandOptionsSerializer(data=request.data)
+            if serializer.is_valid():
+                command = models.Command.objects.get(pk=command_pk)
+                co = models.CommandOptions(**serializer.validated_data)
+                co.command = command
+                co.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+        except models.Command.DoesNotExist:
+            message = {
+                'error': 'Command of command_id: {command_pk} does not exist.'
+            }
+            return Response(message, status=HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(e)
+            logger.exception(e)
+        message = {
+            'error': 'Unexpected Error. Could not create a Command Option.'
+        }
+        return Response(message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ResultViewSet(viewsets.ModelViewSet):
     """
