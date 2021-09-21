@@ -12,5 +12,6 @@ router.register(r'machine', viewsets.MachineViewSet, basename='machine')
 router.register(r'command', viewsets.CommandViewSet, basename='command')
 router.register(r'commandoptions', viewsets.CommandOptionsViewSet, basename='commandoptions')
 router.register(r'result', viewsets.ResultViewSet, basename='result')
+router.register(r'signup', viewsets.SignupViewSet, basename='signup')
 
 urlpatterns += router.urls

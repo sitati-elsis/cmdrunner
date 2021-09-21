@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from api import models
@@ -28,3 +29,9 @@ class ResultSerializer(serializers.ModelSerializer):
                     'std_out', 'std_err', 'user')
         read_only_fields = ('result_id', 'created_at', 'executed_command',
                     'std_out', 'std_err', 'user')
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'password')
+        extra_kwargs = {'password': {'write_only': True}}
