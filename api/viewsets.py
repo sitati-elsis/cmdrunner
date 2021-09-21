@@ -38,7 +38,7 @@ class CommandViewSet(viewsets.ModelViewSet):
 
     list:
         Return all commands.
-
+        
     create:
         Create a new command.
 
@@ -65,7 +65,7 @@ class CommandOptionsViewSet(viewsets.ModelViewSet):
 
     delete:
         Remove an existing commandoption.
-
+        
     update:
         Update a commandoption.
     """
@@ -73,7 +73,8 @@ class CommandOptionsViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CommandOptionsSerializer
 
     def get_queryset(self):
-        return models.CommandOptions.objects.filter(command=kwargs['command_pk'])
+        return models.CommandOptions.objects.filter(
+            command=self.kwargs['command_pk'])
 
     def create(self, request, command_pk):
         try:
