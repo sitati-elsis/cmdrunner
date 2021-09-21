@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth.models import User
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -5,6 +7,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 
 from api import models, serializers
+
+logger = logging.getLogger(__name__)
 
 class MachineViewSet(viewsets.ModelViewSet):
     queryset = models.Machine.objects.all()
@@ -39,7 +43,8 @@ class SignupViewSet(viewsets.ViewSet):
                 return Response(message, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            print('Failed to create new user')
+            logging.info('Failed to create new user')
+            logging.exception(e)
         message = {
             'error': 'Failed to create new user.'
         }

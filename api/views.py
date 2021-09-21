@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 # from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -11,6 +12,8 @@ from paramiko.client import AutoAddPolicy, SSHClient
 from api.models import Command, CommandOptions, Result
 from api import serializers
 
+logger = logging.getLogger(__name__)
+
 def generate_full_command(command_id, command_options):
     cmd = ''
     command = Command.objects.get(pk=command_id)
@@ -18,7 +21,7 @@ def generate_full_command(command_id, command_options):
     for option in command_options:
         co = CommandOptions.objects.get(pk=option)
         cmd = f'{cmd} -{co.option} '
-    print(f'full command: {cmd}')
+    logger.info(f'full command: {cmd}.')
     return cmd
 
 # async def ssh_remote_machine(request):
@@ -49,12 +52,13 @@ def ssh_remote_machine(data, command_id):
             stored += i + '\n'
         result.std_err = stored
         result.save()
+        logger.info('stdout and/or stderr successfully stored in database.')
     except Exception as e:
-        print('An error occurred while attemtping to execute command on remote host.')
-        print(e)
+        logger.info('An error occurred while attemtping to execute command on remote host.')
+        logger.exception(e)
     finally:
         client.close()
-        print('connection successfully closed.')
+        logger.info('client connection successfully closed.')
     return result
 
 # Create your views here.
