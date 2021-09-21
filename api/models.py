@@ -28,7 +28,7 @@ class CommandOptions(models.Model):
         return f'{self.command.command_name} {self.option}'
 
 class Result(models.Model):
-    result_id = models.IntegerField(primary_key=True)
+    result_id = models.AutoField(primary_key=True)
     created_at = models.DateTimeField(auto_now_add=True)
     executed_command = models.CharField(max_length=255)
     std_out = models.TextField()
