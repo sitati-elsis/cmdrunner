@@ -3,11 +3,13 @@ import asyncio
 # from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import async_to_sync
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from paramiko.client import AutoAddPolicy, SSHClient
 
-from api.models import Command, CommandOptions
+from api.models import Command, CommandOptions, Result
+from api import serializers
 
 def generate_full_command(command_id, command_options):
     cmd = ''
@@ -22,6 +24,7 @@ def generate_full_command(command_id, command_options):
 # async def ssh_remote_machine(request):
 def ssh_remote_machine(data, command_id):
     # import pdb; pdb.set_trace()
+    result = None
     client = SSHClient()
     try:
         client.set_missing_host_key_policy(AutoAddPolicy())
@@ -32,20 +35,27 @@ def ssh_remote_machine(data, command_id):
         stdin, stdout, stderr = client.exec_command(full_command)
         # commands that require input e.g. when sudo asks for a password
         # stdin.write(request.data['password'])
+        result = Result(executed_command=full_command)
+        # store stdout
+        stored = ''
         lines = stdout.readlines()
-        print('printing stdout')
         for i in lines:
-            print(i)
+            stored += i + '\n'
+        result.std_out = stored
+        # store stderr
+        stored = ''
         lines = stderr.readlines()
-        print('printing stderr')
         for i in lines:
-            print(i)
+            stored += i + '\n'
+        result.std_err = stored
+        result.save()
     except Exception as e:
         print('An error occurred while attemtping to execute command on remote host.')
         print(e)
     finally:
         client.close()
         print('connection successfully closed.')
+    return result
 
 # Create your views here.
 @csrf_exempt
@@ -55,6 +65,13 @@ def execute(request, command_id):
         # loop = asyncio.get_event_loop()
         # loop.create_task(ssh_remote_machine(request.data))
         # async_to_sync(ssh_remote_machine(request.data))
-        ssh_remote_machine(request.data, command_id)
-        return Response({'message': 'command has been sent to remote host.'})
-    return Response({'error': f'Method {request.method} not allowed'})
+        result = ssh_remote_machine(request.data, command_id)
+        if result:
+            serializer = serializers.ResultSerializer(result)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        message = {
+            'error': 'Could not successfully execute command on remote host.'
+        }
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+    message = {'error': f'Method {request.method} not allowed'}
+    return Response(message, status=status.HTTP_405_METHOD_NOT_ALLOWED)
