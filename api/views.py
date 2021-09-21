@@ -1,121 +1,42 @@
-import asyncio
 import logging
 
 from django.views.decorators.csrf import csrf_exempt
-from asgiref.sync import async_to_sync
-from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from paramiko.client import AutoAddPolicy, SSHClient
+from rest_framework import status
 
-from api.models import Command, CommandOptions, Result, Machine
-from api import serializers
+from api import models, tasks, utils, serializers
 
 logger = logging.getLogger(__name__)
-
-def generate_full_command(command_id, command_options, params):
-    cmd = ''
-    command = Command.objects.get(pk=command_id)
-    cmd = f'{command.command_name}'
-    for option in command_options:
-        co = CommandOptions.objects.filter(pk=option, command=command)
-        if len(co) == 1:
-            co = co[0]
-            cmd = f'{cmd} -{co.option} '
-    for param in params:
-        cmd = f'{cmd} {param} '
-    logger.info(f'full command: {cmd}.')
-    return cmd, command
-
-# async def ssh_remote_machine(request):
-def ssh_remote_machine(user, data, command_id):
-    results = []
-    client = SSHClient()
-    try:
-        client.set_missing_host_key_policy(AutoAddPolicy())
-        # construct the command that will be executed
-        cmd_options = data.get('cmd_options')
-        params = data.get('parameters', [])
-        full_command, command = generate_full_command(command_id,
-                                    cmd_options, params)
-        # execute command for each machine_id supplied
-        machines = data.pop('machines')
-        for machine_dict in machines:
-            machine = Machine.objects.get(pk=machine_dict['machine_id'])
-            client.connect(
-                username=machine_dict['username'],
-                password=machine_dict['password'],
-                hostname=machine.ip_address,
-                timeout=10,
-            )
-            stdin, stdout, stderr = client.exec_command(
-                                        full_command, timeout=10)
-            # commands that require input e.g. when sudo asks for a password
-            if command.requires_input:
-                command_input = data['command_input']
-                stdin.write(command_input + '\n')
-                stdin.flush()
-            result = Result(executed_command=full_command,
-                                user=user, machine=machine)
-            # store stdout
-            stored = ''
-            lines = stdout.readlines()
-            for i in lines:
-                stored += i + '\n'
-            result.std_out = stored
-            # store stderr
-            stored = ''
-            lines = stderr.readlines()
-            for i in lines:
-                stored += i + '\n'
-            result.std_err = stored
-            result.save()
-            results.append(result)
-            client.close()
-        logger.info('stdout and/or stderr successfully stored in database.')
-    except Exception as e:
-        logger.info('An error occurred while attemtping to execute command on remote host.')
-        logger.exception(e)
-    finally:
-        client.close()
-        logger.info('client connection successfully closed.')
-    return results
 
 # Create your views here.
 @csrf_exempt
 @api_view(['POST'])
 def execute(request, command_id):
-    """
-    Execute a command instance of primary key = <command_id> on one or more
-    machines.
+    try:
+        command = models.Command.objects.get(pk=command_id)
+        machines = request.data.get('machines', [])
+        command_options = request.data.get('command_options', '')
+        params =  request.data.get('parameters', '')
+        full_command = utils.generate_full_command(command, command_options, params)
+        results = []
 
-    JSON payload strucure:
-    
-        {
-            "cmd_options": [<command_option_id_1>, <command_option_id_2>,...],
-            "machines": [
-                {
-                    "machine_id": <machine_id>,
-                    "username": "<username>",
-                    "password": "<password>"
-                },
-                ...
-            ],
-            "parameters": [<parameter_1>, <parameter_2>,...],
-            "command_input": "<string>"
-        }
-    """
-    if request.method == 'POST':
-        # loop = asyncio.get_event_loop()
-        # loop.create_task(ssh_remote_machine(request.data))
-        # async_to_sync(ssh_remote_machine(request.data))
-        result = ssh_remote_machine(request.user, request.data, command_id)
-        if result:
-            serializer = serializers.ResultSerializer(result, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        message = {
-            'error': 'Could not successfully execute command on remote host.'
-        }
-        return Response(message, status=status.HTTP_400_BAD_REQUEST)
-    message = {'error': f'Method {request.method} not allowed'}
-    return Response(message, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        requires_input = command.requires_input
+
+        for machine_dict in machines:
+            machine = models.Machine.objects.get(pk=machine_dict.pop('machine_id'))
+            result = models.Result(
+                user=request.user, machine=machine, executed_command=full_command)
+            result.save()
+            results.append(result)
+            machine_dict['ip_address'] = machine.ip_address
+            tasks.ssh_remote_machine.delay(machine_dict, requires_input,
+                                            full_command, result.result_id)
+        serialized = serializers.ResultSerializer(results, many=True)
+        return Response(serialized.data, status=status.HTTP_202_ACCEPTED)
+    except Exception as e:
+        logger.exception(e)
+    message = {
+        'error': 'An error occurred while attemtping to execute command on remote host.'
+    }
+    return Response(message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
