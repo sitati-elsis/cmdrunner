@@ -1,3 +1,5 @@
 # Ignore sqlite3 database file
-db.sqlite3
+cmdrunner/db.sqlite3
 
+# Ignore log files
+*.log
