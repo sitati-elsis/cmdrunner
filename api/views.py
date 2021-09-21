@@ -26,34 +26,42 @@ def generate_full_command(command_id, command_options):
 
 # async def ssh_remote_machine(request):
 def ssh_remote_machine(user, data, command_id):
-    # import pdb; pdb.set_trace()
-    result = None
+    results = []
     client = SSHClient()
     try:
         client.set_missing_host_key_policy(AutoAddPolicy())
-        machines = data.pop('machines')
+        # construct the command that will be executed
         cmd_options = data.pop('cmd_options')
         full_command = generate_full_command(command_id, cmd_options)
-        client.connect(**data)
-        stdin, stdout, stderr = client.exec_command(full_command)
-        # commands that require input e.g. when sudo asks for a password
-        # stdin.write(request.data['password'])
-        machine = Machine.objects.get(pk=machines[0])
-        result = Result(executed_command=full_command,
-                            user=user, machine=machine)
-        # store stdout
-        stored = ''
-        lines = stdout.readlines()
-        for i in lines:
-            stored += i + '\n'
-        result.std_out = stored
-        # store stderr
-        stored = ''
-        lines = stderr.readlines()
-        for i in lines:
-            stored += i + '\n'
-        result.std_err = stored
-        result.save()
+        # execute command for each machine_id supplied
+        machines = data.pop('machines')
+        for machine_dict in machines:
+            machine = Machine.objects.get(pk=machine_dict['machine_id'])
+            client.connect(
+                username=machine_dict['username'],
+                password=machine_dict['password'],
+                hostname=machine.ip_address
+            )
+            stdin, stdout, stderr = client.exec_command(full_command)
+            # commands that require input e.g. when sudo asks for a password
+            # stdin.write(request.data['password'])
+            result = Result(executed_command=full_command,
+                                user=user, machine=machine)
+            # store stdout
+            stored = ''
+            lines = stdout.readlines()
+            for i in lines:
+                stored += i + '\n'
+            result.std_out = stored
+            # store stderr
+            stored = ''
+            lines = stderr.readlines()
+            for i in lines:
+                stored += i + '\n'
+            result.std_err = stored
+            result.save()
+            results.append(result)
+            client.close()
         logger.info('stdout and/or stderr successfully stored in database.')
     except Exception as e:
         logger.info('An error occurred while attemtping to execute command on remote host.')
@@ -61,7 +69,7 @@ def ssh_remote_machine(user, data, command_id):
     finally:
         client.close()
         logger.info('client connection successfully closed.')
-    return result
+    return results
 
 # Create your views here.
 @csrf_exempt
@@ -73,7 +81,7 @@ def execute(request, command_id):
         # async_to_sync(ssh_remote_machine(request.data))
         result = ssh_remote_machine(request.user, request.data, command_id)
         if result:
-            serializer = serializers.ResultSerializer(result)
+            serializer = serializers.ResultSerializer(result, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         message = {
             'error': 'Could not successfully execute command on remote host.'
