@@ -19,9 +19,9 @@ def generate_full_command(command_id, command_options, params):
     command = Command.objects.get(pk=command_id)
     cmd = f'{command.command_name}'
     for option in command_options:
-        co = CommandOptions.objects.get(pk=option)
-        if co.command.command_id == command.command_id:
-            # only add the option if it belongs to command
+        co = CommandOptions.objects.filter(pk=option, command=command)
+        if len(co) == 1:
+            co = co[0]
             cmd = f'{cmd} -{co.option} '
     for param in params:
         cmd = f'{cmd} {param} '
@@ -35,7 +35,7 @@ def ssh_remote_machine(user, data, command_id):
     try:
         client.set_missing_host_key_policy(AutoAddPolicy())
         # construct the command that will be executed
-        cmd_options = data.pop('cmd_options')
+        cmd_options = data.get('cmd_options')
         params = data.get('parameters', [])
         full_command = generate_full_command(command_id, cmd_options, params)
         # execute command for each machine_id supplied
@@ -45,7 +45,8 @@ def ssh_remote_machine(user, data, command_id):
             client.connect(
                 username=machine_dict['username'],
                 password=machine_dict['password'],
-                hostname=machine.ip_address
+                hostname=machine.ip_address,
+                timeout=10.0,
             )
             stdin, stdout, stderr = client.exec_command(full_command)
             # commands that require input e.g. when sudo asks for a password
