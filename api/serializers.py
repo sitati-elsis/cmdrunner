@@ -19,7 +19,8 @@ class CommandSerializer(serializers.ModelSerializer):
     commandoption = CommandOptionsSerializer(many=True, read_only=True)
     class Meta:
         model = models.Command
-        fields = ('command_id', 'command_name', 'commandoption',)
+        fields = ('command_id', 'command_name', 'requires_input',
+                    'commandoption',)
 
 
 class ResultSerializer(serializers.ModelSerializer):

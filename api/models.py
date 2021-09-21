@@ -14,6 +14,7 @@ class Machine(models.Model):
 class Command(models.Model):
     command_id = models.AutoField(primary_key=True)
     command_name = models.CharField(max_length=10)
+    requires_input = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.command_name}'

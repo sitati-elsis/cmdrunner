@@ -25,7 +25,7 @@ def generate_full_command(command_id, command_options, params):
     for param in params:
         cmd = f'{cmd} {param} '
     logger.info(f'full command: {cmd}.')
-    return cmd
+    return cmd, command
 
 # async def ssh_remote_machine(request):
 def ssh_remote_machine(user, data, command_id):
@@ -36,7 +36,8 @@ def ssh_remote_machine(user, data, command_id):
         # construct the command that will be executed
         cmd_options = data.get('cmd_options')
         params = data.get('parameters', [])
-        full_command = generate_full_command(command_id, cmd_options, params)
+        full_command, command = generate_full_command(command_id,
+                                    cmd_options, params)
         # execute command for each machine_id supplied
         machines = data.pop('machines')
         for machine_dict in machines:
@@ -45,11 +46,15 @@ def ssh_remote_machine(user, data, command_id):
                 username=machine_dict['username'],
                 password=machine_dict['password'],
                 hostname=machine.ip_address,
-                timeout=10.0,
+                timeout=10,
             )
-            stdin, stdout, stderr = client.exec_command(full_command)
+            stdin, stdout, stderr = client.exec_command(
+                                        full_command, timeout=10)
             # commands that require input e.g. when sudo asks for a password
-            # stdin.write(request.data['password'])
+            if command.requires_input:
+                command_input = data['command_input']
+                stdin.write(command_input + '\n')
+                stdin.flush()
             result = Result(executed_command=full_command,
                                 user=user, machine=machine)
             # store stdout
@@ -96,7 +101,8 @@ def execute(request, command_id):
                 },
                 ...
             ],
-            "parameters": [<parameter_1>, <parameter_2>,...]
+            "parameters": [<parameter_1>, <parameter_2>,...],
+            "command_input": "<string>"
         }
     """
     if request.method == 'POST':
