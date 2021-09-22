@@ -23,14 +23,14 @@ urlpatterns = [
     ), name='swagger-ui'),
 ]
 
-router = DefaultRouter()
+router = DefaultRouter(trailing_slash=False)
 router.register(r'machine', viewsets.MachineViewSet, basename='machine')
 router.register(r'result', viewsets.ResultViewSet, basename='result')
 router.register(r'signup', viewsets.SignupViewSet, basename='signup')
 
 urlpatterns += router.urls
 
-router = drf_nested_routers.SimpleRouter()
+router = drf_nested_routers.SimpleRouter(trailing_slash=False)
 router.register(r'command', viewsets.CommandViewSet)
 
 domains_router = drf_nested_routers.NestedSimpleRouter(router, r'command', lookup='command')

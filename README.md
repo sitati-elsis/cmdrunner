@@ -76,17 +76,17 @@ Running a development server as described below will require the following servi
 11. Create a user via an API client e.g. Postman or curl
 
     ```bash
-    curl -X POST http://localhost:8000/api/signup/ -H "Content-Type: application/json" -d '{"username":"stevo", "password":"stevo123"}'
+    curl -X POST http://localhost:8000/api/signup -H "Content-Type: application/json" -d '{"username":"stevo", "password":"stevo123"}'
     ```
 12. Create and/or retrieve your access token through the following route.
 
     ```bash
-    curl -X POST http://localhost:8000/api/login/ -H "Content-Type: application/json" -d '{"username":"stevo", "password":"stevo123"}'
+    curl -X POST http://localhost:8000/api/login -H "Content-Type: application/json" -d '{"username":"stevo", "password":"stevo123"}'
     ```
 13. With the access token, subsequent authenticated requests can be made to the rest of this API's endpoints. The access token must be passed to the `Authorization` header with the `Token <token>` string format e.g.
 
     ```bash
-    curl -X GET http://localhost:8000/api/machine/ -H "Content-Type: application/json" -H "Authorization: Token 49072f4a93b5fe9bed37551f951e9aba2a786397"
+    curl -X GET http://localhost:8000/api/machine -H "Content-Type: application/json" -H "Authorization: Token 49072f4a93b5fe9bed37551f951e9aba2a786397"
     ```
 
 # Setup Development Environment Using docker-compose
