@@ -27,9 +27,9 @@ class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Result
         fields = ('result_id', 'created_at', 'executed_command',
-                    'std_out', 'std_err', 'user', 'machine')
+                    'std_out', 'std_err', 'user', 'machine', 'status')
         read_only_fields = ('result_id', 'created_at', 'executed_command',
-                    'std_out', 'std_err', 'user', 'machine')
+                    'std_out', 'std_err', 'user', 'machine', 'status')
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

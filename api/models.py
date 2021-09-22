@@ -39,6 +39,17 @@ class Result(models.Model):
         User, on_delete=models.CASCADE, related_name='result')
     machine = models.ForeignKey(
         Machine, on_delete=models.CASCADE, related_name='result')
+    COMPLETE = 'COMP'
+    PENDING = 'PEND'
+    STATUS_CHOICES = [
+        (PENDING, 'PENDING'),
+        (COMPLETE, 'COMPLETE'),
+    ]
+    status = models.CharField(
+        max_length=4,
+        choices=STATUS_CHOICES,
+        default=PENDING,
+    )
 
     def __str__(self):
         return f'{self.result_id}'
