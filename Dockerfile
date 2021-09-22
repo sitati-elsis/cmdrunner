@@ -19,7 +19,6 @@ RUN adduser --disabled-password celery && \
 
 RUN apk add --no-cache libffi-dev make python3-dev automake g++ \
     autoconf postgresql-dev musl-dev
-# RUN apk add --no-cache libffi-dev make python3-dev gcc
 
 RUN pip install pipenv
 
@@ -28,12 +27,6 @@ RUN pipenv install --system
 RUN mkdir -p /var/log/django/
 
 EXPOSE 7331
-
-# pg_ready command is installed through this package.
-# The command will be used to poll the "db" container to check if postgres is
-# ready to accept connections. When ready, migrations will be run in the
-# entrypoint script.
-RUN apk add postgresql-client
 
 RUN chown root:root /code/docker_entrypoint.sh && chmod 755 /code/docker_entrypoint.sh
 
