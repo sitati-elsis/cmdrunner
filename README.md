@@ -106,8 +106,9 @@ Use the following command to run the app.
 ```bash
 docker-compose up
 ```
+The host port for the app is `port 8080` therefore the app runs on `http://localhost:8080/`
 
-To stop the app, use Ctrl + C on the terminal.
+To stop the app, use Ctrl + C on the terminal. 
 ```bash
 ^CGracefully stopping... (press Ctrl+C again to force)
 ```
