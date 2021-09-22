@@ -9,7 +9,8 @@ from rest_framework_nested import routers as drf_nested_routers
 from api import viewsets, views
 
 urlpatterns = [
-    path('command/<int:command_id>/execute/', views.execute, name='execute'),
+    path('command/<int:command_id>/execute',
+            views.ExecuteCommand.as_view(), name='execute'),
     path('login', rest_auth_views.obtain_auth_token, name='login'),
     path('openapi', get_schema_view(
         title="CMDRunner API",
