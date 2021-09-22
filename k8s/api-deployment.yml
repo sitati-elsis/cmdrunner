@@ -17,7 +17,7 @@ spec:
         service: api-service
     spec:
       containers:
-      - image: lewisemm/cmdrunner:v0.1
+      - image: elsis/cmdrunner:v0.1
         name: api
         ports:
         - containerPort: 7331
