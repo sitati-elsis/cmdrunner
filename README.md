@@ -3,9 +3,9 @@ Welcome to CMDRunner, your web based SSH platform.
 
 This is an API which can run SSH commands on remote machines.
 
-
 # Environment Variables
 - DJANGO_SETTINGS_MODULE (defaults to `cmdrunner.settings.prod_settings`)
+- RABBITMQ_HOST (defaults to `rabbitmq`. On development environment, set this to `localhost`)
 
 The rest of these environment variables will be required if  `DJANGO_SETTINGS_MODULE` has been set to `cmdrunner.settings.prod_settings`
 -  SECRET_KEY 
