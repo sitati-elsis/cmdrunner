@@ -1,5 +1,5 @@
 # CMDRunner
-Welcome to CMDRunner, your web based SSH platform. 
+Welcome to CMDRunner, your web based SSH platform.
 
 This is an API which can run SSH commands on remote machines.
 
@@ -30,12 +30,15 @@ Running a development server as described below will require the following servi
       3.31.1 2020-01-27 19:55:54 3bfa9cc97da10598521b342961df8f5f68c7388fa117345eeb516eaa837balt1
       ```
     - If it's not installed, download and install [instructions can be found here](https://www.sqlite.org/download.html).
+  * celery workers
+    - Workers run in the background to do the heavy liftung.
+    - Start them with `celery -A cmdrunner worker -l INFO`
 
 ## Running the Development Environment
 1. Clone the repo:
 
     ```bash
-    git clone git@github.com:sitati-elsis/cmdrunner.git
+    git clone git@github.com:lewisemm/cmdrunner.git
     ```
 
 2. `cd` into the repo you have just cloned.
