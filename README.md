@@ -3,6 +3,7 @@ Welcome to CMDRunner, your web based SSH platform.
 
 This is an API which can run SSH commands on remote machines.
 
+
 # Environment Variables
 - DJANGO_SETTINGS_MODULE (defaults to `cmdrunner.settings.prod_settings`)
 - RABBITMQ_HOST (defaults to `rabbitmq`. On development environment, set this to `localhost`)
@@ -31,8 +32,11 @@ Running a development server as described below will require the following servi
       ```
     - If it's not installed, download and install [instructions can be found here](https://www.sqlite.org/download.html).
   * celery workers
-    - Workers run in the background to do the heavy liftung.
-    - Start them with `celery -A cmdrunner worker -l INFO`
+    - Workers run in the background to do the heavy lifting.
+    - Start the celery workers with the command below.
+      ```bash
+      celery -A cmdrunner worker -l INFO
+      ```
 
 ## Running the Development Environment
 1. Clone the repo:
@@ -47,31 +51,39 @@ Running a development server as described below will require the following servi
     cd cmdrunner/
     ```
 3. Set the environment variables as described above.
-3. Install pipenv
-4. Create a pipenv virtual environment through the following command.
+
+4. Install pipenv
+   ```bash
+   pip install pipenv
+   ```
+5. Create a pipenv virtual environment through the following command.
     ```bash
     pipenv shell
     ```
-5. Install project dependencies.
+6. Install project dependencies.
     ```bash
     pipenv install
     ```
-6. Start the development server.
+7. Run migrations.
+   ```bash
+   python manage.py migrate
+   ```
+10. Start the development server.
     ```bash
     python manage.py runserver
     ```
     This runs on http://localhost:8000/ by default.
-7. Create a user via an API client e.g. Postman or curl
+11. Create a user via an API client e.g. Postman or curl
 
     ```bash
     curl -X POST http://localhost:8000/api/signup/ -H "Content-Type: application/json" -d '{"username":"stevo", "password":"stevo123"}'
     ```
-8. Create and/or retrieve your access token through the following route.
+12. Create and/or retrieve your access token through the following route.
 
     ```bash
     curl -X POST http://localhost:8000/api/login/ -H "Content-Type: application/json" -d '{"username":"stevo", "password":"stevo123"}'
     ```
-9. With the access token, subsequent authenticated requests can be made to the rest of this API's endpoints. The access token must be passed to the `Authorization` header with the `Token <token>` string format e.g.
+13. With the access token, subsequent authenticated requests can be made to the rest of this API's endpoints. The access token must be passed to the `Authorization` header with the `Token <token>` string format e.g.
 
     ```bash
     curl -X GET http://localhost:8000/api/machine/ -H "Content-Type: application/json" -H "Authorization: Token 49072f4a93b5fe9bed37551f951e9aba2a786397"
