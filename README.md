@@ -35,7 +35,7 @@ Running a development server as described below will require the following servi
 1. Clone the repo:
 
     ```bash
-    git clone git@github.com:lewisemm/cmdrunner.git
+    git clone git@github.com:sitati-elsis/cmdrunner.git
     ```
 
 2. `cd` into the repo you have just cloned.
