@@ -176,12 +176,12 @@ docker-compose build
 7. Access the api.
     ```bash
     # signup to create a user
-    curl -X POST http://localhost:8000/api/signup/ -H "Content-Type: application/json" -d '{"username":"stevo", "password":"stevo123"}'
+    curl -X POST http://localhost:8000/api/signup -H "Content-Type: application/json" -d '{"username":"stevo", "password":"stevo123"}'
     # response
     { 'message': 'User signup successful.' }
 
     # login to get the access token
-    curl -X POST http://localhost:8000/api/login/ -H "Content-Type: application/json" -d '{"username":"stevo", "password":"stevo123"}'
+    curl -X POST http://localhost:8000/api/login -H "Content-Type: application/json" -d '{"username":"stevo", "password":"stevo123"}'
     # response
     { 'token': 49072f4a93b5fe9bed37551f951e9aba2a786397 }
     ```
@@ -190,7 +190,7 @@ docker-compose build
 
 
 # API Documentation
-This can be accessed through an authenticated request at the http://localhost:8000/api/docs/ endpoint.
+This can be accessed through an authenticated request at the http://localhost:8000/api/docs endpoint.
 
 # Tests
 Tests can be run through via `coverage`.

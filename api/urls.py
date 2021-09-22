@@ -10,7 +10,7 @@ from api import viewsets, views
 
 urlpatterns = [
     path('command/<int:command_id>/execute/', views.execute, name='execute'),
-    path('login/', rest_auth_views.obtain_auth_token, name='login'),
+    path('login', rest_auth_views.obtain_auth_token, name='login'),
     path('openapi', get_schema_view(
         title="CMDRunner API",
         description="API for CMDRunner API SSH Platform.",
