@@ -39,7 +39,7 @@ def ssh_remote_machine(machine, requires_input, full_command, result_id):
         for i in lines:
             stored += i + '\n'
         result.std_err = stored
-        result.status='COMPL'
+        result.status = 'COMP'
         result.save()
         client.close()
         logger.info('stdout and/or stderr successfully stored in database.')
