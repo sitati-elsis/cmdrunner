@@ -31,8 +31,27 @@ class ResultSerializer(serializers.ModelSerializer):
         read_only_fields = ('result_id', 'created_at', 'executed_command',
                     'std_out', 'std_err', 'user', 'machine', 'status')
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'password')
         extra_kwargs = {'password': {'write_only': True}}
+
+
+class MachineDataSerializer(serializers.Serializer):
+    machine_id = serializers.IntegerField(required=True)
+    username = serializers.CharField(max_length=100, required=True)
+    password = serializers.CharField(max_length=100, required=True)
+
+
+class ExecuteCommandSerializer(serializers.Serializer):
+    machines = MachineDataSerializer(many=True, required=True)
+    command_options = serializers.ListField(
+        child=serializers.CharField(max_length=10),
+        required=False
+    )
+    parameters = serializers.ListField(
+        child=serializers.CharField(max_length=50),
+        required=False
+    )
