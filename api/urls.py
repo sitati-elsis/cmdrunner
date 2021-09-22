@@ -3,6 +3,7 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views as rest_auth_views
 from rest_framework.schemas import get_schema_view
+from rest_framework.permissions import AllowAny
 from rest_framework_nested import routers as drf_nested_routers
 
 from api import viewsets, views
@@ -13,7 +14,8 @@ urlpatterns = [
     path('openapi', get_schema_view(
         title="CMDRunner API",
         description="API for CMDRunner API SSH Platform.",
-        version="1.0.0"
+        version="1.0.0",
+        permission_classes=[AllowAny]
     ), name='openapi-schema'),
     path('docs/', TemplateView.as_view(
         template_name='swagger-ui.html',
