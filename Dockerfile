@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:alpine3.14
 
 RUN mkdir /code
 
@@ -14,7 +14,12 @@ RUN mv /etc/default/celeryd.conf /etc/default/celeryd && \
     chmod 755 /etc/init.d/celeryd
 
 # create celery user and disable login
-RUN useradd -M celery && usermod -L celery
+RUN adduser --disabled-password celery && \
+    addgroup celery celery
+
+RUN apk add --no-cache libffi-dev make python3-dev automake g++ \
+    autoconf postgresql-dev musl-dev
+# RUN apk add --no-cache libffi-dev make python3-dev gcc
 
 RUN pip install pipenv
 
@@ -28,7 +33,7 @@ EXPOSE 7331
 # The command will be used to poll the "db" container to check if postgres is
 # ready to accept connections. When ready, migrations will be run in the
 # entrypoint script.
-RUN apt-get update && apt-get install -f -y postgresql-client
+RUN apk add postgresql-client
 
 RUN chown root:root /code/docker_entrypoint.sh && chmod 755 /code/docker_entrypoint.sh
 
