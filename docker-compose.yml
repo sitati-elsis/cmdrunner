@@ -13,7 +13,7 @@ services:
       POSTGRES_DB: cmdrunner_db
   api:
     build: .
-    image: cmdrunner:v0.1
+    image: elsis/cmdrunner:v0.1
     ports:
       - "8080:7331"
     environment:
