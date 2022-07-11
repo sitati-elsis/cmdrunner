@@ -16,7 +16,7 @@ The rest of these environment variables will be required if  `DJANGO_SETTINGS_MO
 -  POSTGRES_DB
 
 
-# Setup Development Environment
+# Setup Development Environment For The Project
 ## Prerequisite Services
 Running a development server as described below will require the following services to be installed on your bare-metal machine.
   * rabbitmq
@@ -38,7 +38,7 @@ Running a development server as described below will require the following servi
       celery -A cmdrunner worker -l INFO
       ```
 
-## Running the Development Environment
+## Running the Development Environment For The Project
 1. Clone the repo:
 
     ```bash
@@ -122,7 +122,7 @@ docker-compose down
 ```bash
 docker-compose build
 ```
-# Running on Kubernetes
+# Running the Project on Kubernetes
 ## Prerequisites
   * minikube
     - minikube is a local Kubernetes cluster, focusing on making it easy to learn and develop for Kubernetes.
